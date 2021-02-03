@@ -1,0 +1,61 @@
+s1 = "The easiest way to earn points with Fetch Rewards is to just shop for the products you already love. If you have any participating brands on your receipt, you'll get points based on the cost of the products. You don't need to clip any coupons or scan individual barcodes. Just scan each grocery receipt after you shop and we'll find the savings for you."
+
+s2 = "The easiest way to earn points with Fetch Rewards is to just shop for the items you already buy. If you have any eligible brands on your receipt, you will get points based on the total cost of the products. You do not need to cut out any coupons or scan individual UPCs. Just scan your receipt after you check out and we will find the savings for you."
+
+s3 = "We are always looking for opportunities for you to earn more points, which is why we also give you a selection of Special Offers. These Special Offers are opportunities to earn bonus points on top of the regular points you earn every time you purchase a participating brand. No need to pre-select these offers, we'll give you the points whether or not you knew about the offer. We just think it is easier that way."
+
+stop_words = ['the', 'on', 'of', 'any', 'your', 'to', 'with', 'is', 'for', 'you', 'are', 'this', 'if', 'have', 'after',
+              'and', 'or', 'just']
+
+
+def get_similarity(sample1, sample2):
+    flag = 0
+
+    # Converting the strings to vectors using the below function
+    text1 = to_vector(sample1)
+    text2 = to_vector(sample2)
+
+    # Filtering only the words repeated in both the string and saving in intersection variable
+    intersection = set(text1.keys()) & set(text2.keys())
+
+    # Calculating the summation of dot product for both the vectors
+    numerator = sum([text1[word] * text2[word] for word in intersection])
+
+    # Calculating the denominator of the formula, that is, magnitude of vectors
+    sum1 = sum([text1[key] ** 2 for key in list(text1.keys())])
+    sum2 = sum([text2[key] ** 2 for key in list(text2.keys())])
+
+    # Calculating the square root of vectors for the denominator
+    denominator = (sum1 ** (1 / 2)) * (sum2 ** (1 / 2))
+
+    # Calculating the cosine similarity
+    cosine_similarity = (float(numerator) / denominator) * 100
+    print('Cosine similarity is:', cosine_similarity)
+
+    if cosine_similarity > 60:
+        flag = 1
+
+    return flag
+
+
+def to_vector(text):
+    sentence = []
+    dict_word = {}
+
+    # Removing special characyers and stop words from the string
+    sen1 = "".join(i for i in text if i not in ('!', '.', ',', ':')).lower().split(" ")
+
+    for word in sen1:
+        if word not in stop_words:
+            sentence.append(word)
+
+    # Creating a dictionary with words as the key and number of occurences as value
+    for word in sentence:
+        if word in dict_word:
+            dict_word[word] += 1
+        else:
+            dict_word[word] = 1
+    return dict_word
+
+
+print("Score: ", get_similarity(s3, s2))
